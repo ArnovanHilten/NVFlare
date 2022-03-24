@@ -15,7 +15,6 @@
 import os
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"]=""
-
 import tensorflow as tf
 import numpy as np
 
@@ -41,13 +40,15 @@ class SimpleTrainer(Executor):
         self.datapath = os.getcwd() + "/"
         self.inputsize = 100
 
+        print('selfdatapath', self.datapath)
+
 
     def handle_event(self, event_type: str, fl_ctx: FLContext):
         if event_type == EventType.START_RUN:
             self.setup(fl_ctx)
 
     def setup(self, fl_ctx: FLContext):
-        simupath = '/home/avanhilten/PycharmProjects/nvidia_conference/NVFlare/examples/hello-GenNet_tf2/custom/'
+        simupath = '/home/avanhilten/PycharmProjects/nvidia_conference/NVFlare/examples/hello-gennet-tf2/custom/'
         client_name = fl_ctx.get_identity_name()
         if client_name == "site-1":
             self.xtrain = np.load(simupath + 'Simulations/xtrain_1.npy')
@@ -106,10 +107,19 @@ class SimpleTrainer(Executor):
         dxo = from_shareable(shareable)
         model_weights = dxo.data
 
+        # use previous round's client weights to replace excluded layers from server
+        prev_weights = {
+            self.model.get_layer(index=key).name: value for key, value in enumerate(self.model.get_weights())
+        }
+
+        ordered_model_weights = {key: model_weights.get(key) for key in prev_weights}
+        for key in self.var_list:
+            value = ordered_model_weights.get(key)
+            if np.all(value == 0):
+                ordered_model_weights[key] = prev_weights[key]
 
         # update local model weights with received weights
-
-        self.model.set_weights(list(model_weights.values()))
+        self.model.set_weights(list(ordered_model_weights.values()))
 
         # adjust LR or other training time info as needed
         # such as callback in the fit function
@@ -125,7 +135,7 @@ class SimpleTrainer(Executor):
         return new_shareable
 
 def weighted_binary_crossentropy(y_true, y_pred):
-    weight_positive_class = 1.2
+    weight_positive_class = 2
     weight_negative_class = 1
 
     y_true = tf.keras.backend.clip(y_true, 0.0001, 1)
