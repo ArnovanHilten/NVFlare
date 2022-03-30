@@ -82,6 +82,12 @@ class TF2ModelPersistor(ModelPersistor):
         Returns:
             Model object
         """
+        run_number = fl_ctx.get_run_number()
+        client_name = fl_ctx.get_identity_name()
+        # custom_folder = "/run_" + str(run_number) + '/app_' + str(client_name) + "/custom/"
+        # path_run_folder = os.getcwd() + "/" + custom_folder
+        print(client_name, run_number)
+        path_run_folder = '/home/avanhilten/PycharmProjects/nvidia_conference/NVFlare/examples/hello-gennet-tf2/custom/'
 
         if os.path.exists(self._pkl_save_path):
             self.logger.info(f"Loading server weights")
@@ -89,7 +95,7 @@ class TF2ModelPersistor(ModelPersistor):
                 model_learnable = pickle.load(f)
         else:
             self.logger.info(f"Initializing server model")
-            network = GenNet()
+            network = GenNet(path_run_folder=path_run_folder)
             loss_fn = tf.keras.losses.BinaryCrossentropy()
             network.compile(optimizer="adam", loss=loss_fn, metrics=["accuracy"])
             _ = network(tf.keras.Input(shape=100))

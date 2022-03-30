@@ -16,12 +16,13 @@ import tensorflow as tf
 from scipy.sparse import coo_matrix
 from GenNet_layers_tf2 import LocallyDirected1D
 import scipy
-
+import os
 class GenNet(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, path_run_folder):
         super(GenNet, self).__init__()
-        simupath = '/home/avanhilten/PycharmProjects/nvidia_conference/NVFlare/examples/hello-gennet-tf2/custom/'
-        genemask = scipy.sparse.load_npz(simupath + 'Simulations/SNP_gene_mask.npz')
+        self.path_run_folder = path_run_folder
+
+        genemask = scipy.sparse.load_npz(self.path_run_folder + '/Simulations/SNP_gene_mask.npz')
         self.inputsize = genemask.shape[0]
         self.reshape = tf.keras.layers.Reshape(input_shape=(self.inputsize,), target_shape=(self.inputsize, 1))
         self.gene_layer = LocallyDirected1D(mask=genemask,

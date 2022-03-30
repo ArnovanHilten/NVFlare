@@ -17,7 +17,8 @@ os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"]=""
 import tensorflow as tf
 import numpy as np
-
+import os
+import pickle
 from nvflare.apis.dxo import DXO, DataKind, from_shareable
 from nvflare.apis.fl_constant import ReturnCode
 from nvflare.apis.event_type import EventType
@@ -29,6 +30,7 @@ from utility_functions import weighted_binary_crossentropy, sensitivity, specifi
 from tf2_net import GenNet
 
 
+
 class SimpleTrainer(Executor):
     def __init__(self, epochs_per_round):
         super().__init__()
@@ -36,8 +38,8 @@ class SimpleTrainer(Executor):
         self.train_images, self.train_labels = None, None
         self.test_images, self.test_labels = None, None
         self.model = None
-
         self.datapath = os.getcwd() + "/"
+        self.path_run_folder = None
         self.inputsize = 100
 
         print('selfdatapath', self.datapath)
@@ -48,22 +50,31 @@ class SimpleTrainer(Executor):
             self.setup(fl_ctx)
 
     def setup(self, fl_ctx: FLContext):
-        simupath = '/home/avanhilten/PycharmProjects/nvidia_conference/NVFlare/examples/hello-gennet-tf2/custom/'
+
         client_name = fl_ctx.get_identity_name()
+        run_number = fl_ctx.get_run_number()
+
+        custom_folder = "/run_" + str(run_number) + '/app_' + str(client_name) + "/custom/"
+        self.path_run_custum= self.datapath + custom_folder
+
+        self.path_run_folder = '/home/avanhilten/PycharmProjects/nvidia_conference/NVFlare/examples/hello-gennet-tf2/custom/'
+
+
+
         if client_name == "site-1":
-            self.xtrain = np.load(simupath + 'Simulations/xtrain_1.npy')
-            self.ytrain = np.load(simupath + 'Simulations/ytrain_1.npy')
+            self.xtrain = np.load(self.path_run_folder + 'Simulations/xtrain_1.npy')
+            self.ytrain = np.load(self.path_run_folder + 'Simulations/ytrain_1.npy')
         elif client_name == "site-2":
-            self.xtrain = np.load(simupath + 'Simulations/xtrain_2.npy')
-            self.ytrain = np.load(simupath + 'Simulations/ytrain_2.npy')
+            self.xtrain = np.load(self.path_run_folder + 'Simulations/xtrain_2.npy')
+            self.ytrain = np.load(self.path_run_folder + 'Simulations/ytrain_2.npy')
         elif client_name == "site-3":
-            self.xtrain = np.load(simupath + 'Simulations/xtrain_3.npy')
-            self.ytrain = np.load(simupath + 'Simulations/ytrain_3.npy')
+            self.xtrain = np.load(self.path_run_folder + 'Simulations/xtrain_3.npy')
+            self.ytrain = np.load(self.path_run_folder + 'Simulations/ytrain_3.npy')
 
-        self.xval = np.load(simupath + 'Simulations/xval.npy')
-        self.yval = np.load(simupath + 'Simulations/yval.npy')
+        self.xval = np.load(self.path_run_folder + 'Simulations/xval.npy')
+        self.yval = np.load(self.path_run_folder + 'Simulations/yval.npy')
 
-        model = GenNet()
+        model = GenNet(path_run_folder=self.path_run_folder)
         optimizer = tf.keras.optimizers.Adam(lr=0.0006)
         model.compile(loss=weighted_binary_crossentropy, optimizer=optimizer,
                       metrics=["accuracy", sensitivity, specificity])
@@ -128,6 +139,10 @@ class SimpleTrainer(Executor):
 
         # report updated weights in shareable
         weights = {self.model.get_layer(index=key).name: value for key, value in enumerate(self.model.get_weights())}
+
+        run_number = fl_ctx.get_run_number()
+        self.model.save(self.datapath + "/run_" + str(run_number) +"/model_weighs")
+
         dxo = DXO(data_kind=DataKind.WEIGHTS, data=weights)
 
         self.log_info(fl_ctx, "Local epochs finished. Returning shareable")
