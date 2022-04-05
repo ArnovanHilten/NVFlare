@@ -50,8 +50,3 @@ class GenNet(tf.keras.Model):
         return x
 
 
-
-
-
-
-

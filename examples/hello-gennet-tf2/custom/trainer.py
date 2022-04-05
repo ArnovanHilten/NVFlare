@@ -141,7 +141,9 @@ class SimpleTrainer(Executor):
         weights = {self.model.get_layer(index=key).name: value for key, value in enumerate(self.model.get_weights())}
 
         run_number = fl_ctx.get_run_number()
-        self.model.save(self.datapath + "/run_" + str(run_number) +"/model_weighs")
+
+        with open(self.datapath + "/run_" + str(run_number) + '/weights.pickle', "wb") as f:
+            pickle.dump(weights, f)
 
         dxo = DXO(data_kind=DataKind.WEIGHTS, data=weights)
 
