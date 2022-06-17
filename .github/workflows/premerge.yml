@@ -6,25 +6,26 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   unit-tests:
-    runs-on: self-hosted
+    runs-on: [self-hosted, temp-ci]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - run: pip install -r requirements-dev.txt
       - run: PYTHONPATH=$(pwd) ./runtest.sh
 
   example-tests:
-    runs-on: self-hosted
+    runs-on: [self-hosted, temp-ci]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - run: pip install -r requirements-dev.txt
@@ -34,11 +35,11 @@ jobs:
           ./run_example_tests.sh
 
   app-tests:
-    runs-on: self-hosted
+    runs-on: [self-hosted, temp-ci]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - run: pip install -r requirements-dev.txt
@@ -48,11 +49,11 @@ jobs:
           ./run_app_tests.sh
 
   wheel-build:
-    runs-on: self-hosted
+    runs-on: [self-hosted, temp-ci]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - run: pip install -r requirements-dev.txt
