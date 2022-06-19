@@ -28,7 +28,7 @@ from nvflare.apis.fl_context import FLContext
 from nvflare.apis.shareable import Shareable, make_reply
 from nvflare.apis.signal import Signal
 from utility_functions import weighted_binary_crossentropy, sensitivity, specificity
-from tf2_net import GenNet
+from GenNet_tf2 import GenNet
 
 
 

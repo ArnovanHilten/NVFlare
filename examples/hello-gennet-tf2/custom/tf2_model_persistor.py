@@ -25,7 +25,7 @@ from nvflare.app_common.abstract.model import ModelLearnable
 from nvflare.app_common.abstract.model import make_model_learnable
 from nvflare.app_common.abstract.model_persistor import ModelPersistor
 from nvflare.app_common.app_constant import AppConstants
-from tf2_net import GenNet
+from GenNet_tf2 import GenNet
 
 
 class TF2ModelPersistor(ModelPersistor):
