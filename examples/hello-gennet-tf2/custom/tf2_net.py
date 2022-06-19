@@ -22,17 +22,20 @@ class GenNet(tf.keras.Model):
         super(GenNet, self).__init__()
         self.path_run_folder = path_run_folder
 
-        genemask = scipy.sparse.load_npz(self.path_run_folder + '/Simulations/SNP_gene_mask.npz')
+        genemask = scipy.sparse.load_npz('./Simulations/SNP_gene_mask.npz')
         self.inputsize = genemask.shape[0]
         self.reshape = tf.keras.layers.Reshape(input_shape=(self.inputsize,), target_shape=(self.inputsize, 1))
         self.gene_layer = LocallyDirected1D(mask=genemask,
                                             filters=1,
                                             input_shape=(self.inputsize, 1),
+                                            kernel_regularizer=tf.keras.regularizers.l1(0.01),
+                                            activity_regularizer=tf.keras.regularizers.l1(0.01),
                                             name="gene_layer")
         self.flatten = tf.keras.layers.Flatten()
         self.activation_tanh = tf.keras.layers.Activation("tanh")
         self.batchnorm = tf.keras.layers.BatchNormalization(center=False, scale=False, name="batchnorm_layer")
         self.output_node = tf.keras.layers.Dense(units=1,
+                                                 kernel_regularizer=tf.keras.regularizers.l1(0.01),
                                                  activity_regularizer=tf.keras.regularizers.l1(0.01),
                                                  activation="sigmoid",
                                                  name="dense_layer")
