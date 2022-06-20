@@ -69,7 +69,7 @@ class SimpleTrainer(Executor):
         self.xval = np.load(self.path_to_file / 'Simulations/xval.npy')
         self.yval = np.load(self.path_to_file / 'Simulations/yval.npy')
 
-        model = GenNet(path_to_file=self.path_to_file)
+        model = GenNet(path_run_folder=self.path_to_file)
         optimizer = tf.keras.optimizers.Adam(lr=0.0006)
         model.compile(loss=weighted_binary_crossentropy, optimizer=optimizer,
                       metrics=["accuracy", sensitivity, specificity])
