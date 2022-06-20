@@ -20,7 +20,7 @@ import os
 class GenNet(tf.keras.Model):
     def __init__(self, path_run_folder):
         super(GenNet, self).__init__()
-        self.path_run_folder = path_run_folder / '/Simulations/SNP_gene_mask.npz'
+        self.path_run_folder = path_run_folder / 'Simulations/SNP_gene_mask.npz'
         print("\n pathfolder is now:",self.path_run_folder, str(self.path_run_folder))
         genemask = scipy.sparse.load_npz(self.path_run_folder)
         self.inputsize = genemask.shape[0]
