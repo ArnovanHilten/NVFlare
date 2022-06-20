@@ -29,14 +29,14 @@ class GenNet(tf.keras.Model):
                                             filters=1,
                                             input_shape=(self.inputsize, 1),
                                             kernel_regularizer=tf.keras.regularizers.l1(0.01),
-                                            activity_regularizer=tf.keras.regularizers.l1(0.01),
+                                            activity_regularizer=tf.keras.regularizers.l1(1e-5),
                                             name="gene_layer")
         self.flatten = tf.keras.layers.Flatten()
         self.activation_tanh = tf.keras.layers.Activation("tanh")
         self.batchnorm = tf.keras.layers.BatchNormalization(center=False, scale=False, name="batchnorm_layer")
         self.output_node = tf.keras.layers.Dense(units=1,
                                                  kernel_regularizer=tf.keras.regularizers.l1(0.01),
-                                                 activity_regularizer=tf.keras.regularizers.l1(0.01),
+                                                 activity_regularizer=tf.keras.regularizers.l1(1e-5),
                                                  activation="sigmoid",
                                                  name="dense_layer")
 
