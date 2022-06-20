@@ -22,7 +22,7 @@ class GenNet(tf.keras.Model):
         super(GenNet, self).__init__()
         self.path_run_folder = path_run_folder
 
-        genemask = scipy.sparse.load_npz('./Simulations/SNP_gene_mask.npz')
+        genemask = scipy.sparse.load_npz(self.path_run_folder / '/Simulations/SNP_gene_mask.npz')
         self.inputsize = genemask.shape[0]
         self.reshape = tf.keras.layers.Reshape(input_shape=(self.inputsize,), target_shape=(self.inputsize, 1))
         self.gene_layer = LocallyDirected1D(mask=genemask,
