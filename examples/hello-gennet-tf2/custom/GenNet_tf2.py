@@ -29,7 +29,7 @@ class GenNet(tf.keras.Model):
                                             filters=1,
                                             input_shape=(self.inputsize, 1),
                                             kernel_regularizer=tf.keras.regularizers.l1(0.01),
-                                            activity_regularizer=tf.keras.regularizers.l1(1e-5),
+                                            activity_regularizer=tf.keras.regularizers.l1(1e-8),
                                             name="gene_layer")
         self.flatten = tf.keras.layers.Flatten()
         self.activation_tanh = tf.keras.layers.Activation("tanh")
