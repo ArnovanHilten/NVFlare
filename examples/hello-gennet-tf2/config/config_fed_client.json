@@ -22,9 +22,7 @@
         {
           "path": "filter.ExcludeVars",
           "args": {
-            "exclude_vars": [
-              "flatten","reshape","activation"
-            ]
+            "exclude_vars": []
           }
         }
       ]

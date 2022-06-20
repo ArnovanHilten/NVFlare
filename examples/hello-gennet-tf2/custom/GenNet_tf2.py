@@ -28,7 +28,7 @@ class GenNet(tf.keras.Model):
         self.gene_layer = LocallyDirected1D(mask=genemask,
                                             filters=1,
                                             input_shape=(self.inputsize, 1),
-                                            kernel_regularizer=tf.keras.regularizers.l1(0.01),
+                                            kernel_regularizer=tf.keras.regularizers.l1(0.00001),
                                             activity_regularizer=tf.keras.regularizers.l1(1e-8),
                                             name="gene_layer")
         self.flatten = tf.keras.layers.Flatten()
